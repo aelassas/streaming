@@ -58,14 +58,15 @@ app.use(async ({ request, response }, next) => {
     const parts = range.replace('bytes=', '').split('-')
     const start = parseInt(parts[0], 10)
     const videoStat = await util.promisify(fs.stat)(videoPath)
-    const chunkSize = 10 ** 6; // 1 MB
-    const end = Math.min(start + chunkSize, videoStat.size - 1); // We remove 1 from videoStat.size because start starts from 0
+    const chunkSize = 10 ** 6; // 1 mb
+    const end = Math.min(start + chunkSize, videoStat.size - 1) // We remove 1 from videoStat.size because start starts from 0
     const contentLength = end - start + 1 // We add 1 because start starts from 0
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoStat.size}`)
     response.set('Accept-Range', 'bytes')
     response.set('Content-Length', contentLength)
     response.set('Content-Type', 'video/mp4')
+    
     response.status = 206
     response.type = path.extname(name)
     response.body = fs.createReadStream(videoPath, { start, end })
