@@ -58,7 +58,7 @@ app.use(async ({ request, response }, next) => {
     const parts = range.replace('bytes=', '').split('-')
     const start = parseInt(parts[0], 10)
     const videoStat = await util.promisify(fs.stat)(videoPath)
-    const chunkSize = 10 ** 6; // 1mb
+    const chunkSize = 10 ** 6 // 1mb
     const end = Math.min(start + chunkSize, videoStat.size - 1) // We remove 1 from videoStat.size because start starts from 0
     const contentLength = end - start + 1 // We add 1 because start starts from 0
 
