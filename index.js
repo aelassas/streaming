@@ -74,7 +74,7 @@ app.use(async ({ request, response }, next) => {
 
 //
 // We ignore ECONNRESET and ECANCELED errors because the browser
-// closes the connection and the server keeps reading the stream
+// closes the connection and the server tries to read stream
 // so the server says that he cannot read a closed stream
 //
 app.on('error', (err) => {
