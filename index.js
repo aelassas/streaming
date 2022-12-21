@@ -40,7 +40,7 @@ app.use(async ({ request, response }, next) => {
 
     if (!range) {
         response.status = 400
-        response.body = 'Range must be provided'
+        response.body = 'Range not provided'
         return next()
     }
 
@@ -66,10 +66,10 @@ app.use(async ({ request, response }, next) => {
     const videoStat = await util.promisify(fs.stat)(videoPath)
     const videoSize = videoStat.size
     const chunkSize = 10 ** 6 // 1mb
-    const end = Math.min(start + chunkSize, videoSize - 1)  // We remove 1 from videoSize because start and end start from 0
+    const end = Math.min(start + chunkSize, videoSize - 1)  // We remove 1 byte from videoSize because start and end start from 0
     let contentLength = end - start
     if (start + chunkSize > end) {
-        contentLength++ // We add 1 because we removed 1 from videoSize
+        contentLength++ // We add 1 byte because we removed 1 byte from videoSize
     }
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
