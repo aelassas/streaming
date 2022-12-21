@@ -64,11 +64,12 @@ app.use(async ({ request, response }, next) => {
     const parts = range.replace('bytes=', '').split('-')
     const start = parseInt(parts[0], 10)
     const videoStat = await util.promisify(fs.stat)(videoPath)
+    const videoSize = videoStat.size
     const chunkSize = 10 ** 6 // 1mb
-    const end = Math.min(start + chunkSize, videoStat.size - 1) // We remove 1 from videoStat.size because start starts from 0
-    const contentLength = end - start + 1 // We add 1 because start starts from 0
+    const end = Math.min(start + chunkSize, videoSize) - 1 // We remove 1 because start and end start from 0
+    const contentLength = end - start + 1 // We add 1 because start and end start from 0
 
-    response.set('Content-Range', `bytes ${start}-${end}/${videoStat.size}`)
+    response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
     response.set('Accept-Range', 'bytes')
     response.set('Content-Length', contentLength)
 
@@ -79,9 +80,10 @@ app.use(async ({ request, response }, next) => {
 })
 
 //
-// We ignore ECONNRESET and ECANCELED errors because the browser
-// closes the connection and the server tries to read stream
-// so the server says that he cannot read a closed stream
+// We ignore ECONNRESET and ECANCELED errors because when 
+// the browser closes the connection, the server tries
+// to read the stream. So, the server says that it cannot 
+// read a closed stream.
 //
 app.on('error', (err) => {
     if (!['ECONNRESET', 'ECANCELED'].includes(err.code)) {
