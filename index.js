@@ -74,7 +74,6 @@ app.use(async ({ request, response }, next) => {
     response.set('Content-Type', 'video/mp4')
 
     response.status = 206
-    response.type = path.extname(name)
     response.body = fs.createReadStream(videoPath, { start, end })
     return next()
 })
