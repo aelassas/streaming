@@ -50,8 +50,14 @@ app.use(async ({ request, response }, next) => {
     try {
         await util.promisify(fs.access)(videoPath)
     } catch (err) {
-        response.status = 500
-        response.body = err.toString()
+        if (err.code === 'ENOENT') {
+            response.status = 404
+            response.body = `File ${name} not found`
+        } else {
+            response.status = 500
+            response.body = `An error occured while trying to access the file ${name}`
+        }
+        console.log(err.toString())
         return next()
     }
 
@@ -70,6 +76,7 @@ app.use(async ({ request, response }, next) => {
     response.status = 206
     response.type = path.extname(name)
     response.body = fs.createReadStream(videoPath, { start, end })
+    return next()
 })
 
 //
