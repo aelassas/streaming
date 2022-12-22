@@ -3,7 +3,7 @@
 PORT = 3000
 ```
 
-# videos
+# Videos
 To test the server add a video in:
 ```
 videos/video.mp4
