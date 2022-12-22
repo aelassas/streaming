@@ -1,10 +1,14 @@
 import Koa from 'koa'
 import sendFile from 'koa-sendfile'
+import url from 'url'
 import path from 'path'
 import fs from 'fs'
 import util from 'util'
 
-const PORT = process.env.PORT || 3000
+const __filename = url.fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const PORT = parseInt(process.env.PORT, 10) || 3000
 const app = new Koa()
 
 //
@@ -14,7 +18,7 @@ app.use(async (ctx, next) => {
     const { request } = ctx
 
     if (request.url === '/') {
-        await sendFile(ctx, path.resolve('public', 'index.html'))
+        await sendFile(ctx, path.resolve(__dirname, 'public', 'index.html'))
     }
 
     return next()
@@ -24,7 +28,6 @@ app.use(async (ctx, next) => {
 // Serve video streaming
 //
 app.use(async ({ request, response }, next) => {
-
     if (
         !request.url.startsWith('/api/video') ||
         !request.query.name ||
@@ -42,7 +45,7 @@ app.use(async ({ request, response }, next) => {
     }
 
     const name = request.query.name
-    const videoPath = path.resolve('videos', name)
+    const videoPath = path.resolve(__dirname, 'videos', name)
 
     try {
         await util.promisify(fs.access)(videoPath)
