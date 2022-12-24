@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="icon" href="data:,">
-    <title>Streaming</title>
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Streaming</title>
+  <style>
+    body {
+      background-color: rgb(0, 0, 0);
+    }
+
+    video {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      max-height: 100%;
+      max-width: 100%;
+      margin: auto;
+      object-fit: contain;
+    }
+  </style>
 </head>
+
 <body>
-    <video 
-      width="640" 
-      height="360" 
-      src="http://localhost:3000/api/video?name=video.mp4" 
-      controls 
-      controlsList="nodownload">
-    </video>
+  <video src="http://localhost:3000/api/video?name=video.mp4" controls controlsList="nodownload"></video>
 </body>
+
 </html>
