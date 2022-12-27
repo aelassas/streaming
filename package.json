@@ -3,7 +3,6 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Video Streaming Server",
-  "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config index.js",
     "dev": "nodemon -r dotenv/config index.js" 
