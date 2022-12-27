@@ -95,3 +95,4 @@ app.on('error', (err) => {
 // Start the server on the specified PORT
 //
 app.listen(PORT)
+console.log('Video Streaming Server is running on Port', PORT)
