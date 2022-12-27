@@ -31,7 +31,7 @@ app.use(async ({ request, response }, next) => {
     if (
         !request.url.startsWith('/api/video') ||
         !request.query.name ||
-        !request.query.name.match(/^[a-z0-9-_]+\.(mp4)$/i)
+        !request.query.name.match(/^[a-z0-9-_ ]+\.(mp4)$/i)
     ) {
         return next()
     }
