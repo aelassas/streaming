@@ -33,7 +33,7 @@ router.get('/api/video/:name', async ({ request, response }, next) => {
         return next()
     }
 
-    const range = request.headers.range
+    const { range } = request.headers
 
     if (!range) {
         response.status = 400
@@ -87,7 +87,7 @@ app.on('error', (err) => {
 })
 
 //
-// Add router middleware
+// Add Koa Router middleware
 //
 app.use(router.routes())
 app.use(router.allowedMethods())
