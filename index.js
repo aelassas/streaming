@@ -41,9 +41,7 @@ router.get('/api/video/:name', async (ctx, next) => {
     const { range } = request.headers
 
     if (!range) {
-        response.status = 400
-        response.body = 'Range not provided'
-        return next()
+        ctx.throw(400, 'Range not provided')
     }
 
     const videoPath = path.resolve(__dirname, 'videos', name)
@@ -52,14 +50,10 @@ router.get('/api/video/:name', async (ctx, next) => {
         await util.promisify(fs.access)(videoPath)
     } catch (err) {
         if (err.code === 'ENOENT') {
-            response.status = 404
-            response.body = `File ${name} not found`
+            ctx.throw(404)
         } else {
-            response.status = 500
-            response.body = `An error occured while trying to access the file ${name}`
+            ctx.throw(`An error occured while trying to access the file ${name}`)
         }
-        console.log(err.toString())
-        return next()
     }
 
     const parts = range.replace('bytes=', '').split('-')
