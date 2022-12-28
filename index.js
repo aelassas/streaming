@@ -18,6 +18,10 @@ const router = new KoaRouter()
 //
 router.get('/', async (ctx) => {
     await sendFile(ctx, path.resolve(__dirname, 'public', 'index.html'))
+
+    if (!ctx.status) {
+        ctx.throw(404)
+    }
 })
 
 //
