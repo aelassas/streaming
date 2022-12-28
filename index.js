@@ -1,4 +1,5 @@
 import Koa from 'koa'
+import KoaRouter from 'koa-router'
 import sendFile from 'koa-sendfile'
 import url from 'url'
 import path from 'path'
@@ -10,28 +11,22 @@ const __dirname = path.dirname(__filename)
 
 const PORT = parseInt(process.env.PORT, 10) || 3000
 const app = new Koa()
+const router = new KoaRouter()
 
 //
 // Serve HTML page containing the video player
 //
-app.use(async (ctx, next) => {
-    const { request } = ctx
-
-    if (request.url === '/') {
-        await sendFile(ctx, path.resolve(__dirname, 'public', 'index.html'))
-    }
-
-    return next()
+router.get('/', async (ctx) => {
+    await sendFile(ctx, path.resolve(__dirname, 'public', 'index.html'))
 })
 
 //
 // Serve video streaming
 //
-app.use(async ({ request, response }, next) => {
+router.get('/api/video/:name', async ({ request, response }, next) => {
+
     if (
-        !request.url.startsWith('/api/video') ||
-        !request.query.name ||
-        !request.query.name.match(/^[a-z0-9-_ ]+\.mp4$/i)
+        !/^[a-z0-9-_ ]+\.mp4$/i.test(request.params.name)
     ) {
         return next()
     }
@@ -44,7 +39,7 @@ app.use(async ({ request, response }, next) => {
         return next()
     }
 
-    const name = request.query.name
+    const name = request.params.name
     const videoPath = path.resolve(__dirname, 'videos', name)
 
     try {
@@ -76,7 +71,6 @@ app.use(async ({ request, response }, next) => {
     response.status = 206
     response.type = path.extname(name)
     response.body = fs.createReadStream(videoPath, { start, end })
-    return next()
 })
 
 //
@@ -90,6 +84,12 @@ app.on('error', (err) => {
         console.log(err.toString())
     }
 })
+
+//
+// Add router middleware
+//
+app.use(router.routes())
+app.use(router.allowedMethods())
 
 //
 // Start the server on the specified PORT
