@@ -74,13 +74,13 @@ router.get('/api/video/:name', async (ctx, next) => {
 })
 
 //
-// We ignore ECONNRESET and ECANCELED errors because when 
-// the browser closes the connection, the server tries
-// to read the stream. So, the server says that it cannot 
+// We ignore ECONNRESET, ECANCELED and ECONNABORTED errors
+// because when the browser closes the connection, the server
+// tries to read the stream. So, the server says that it cannot
 // read a closed stream.
 //
 app.on('error', (err) => {
-    if (!['ECONNRESET', 'ECANCELED'].includes(err.code)) {
+    if (!['ECONNRESET', 'ECANCELED', 'ECONNABORTED'].includes(err.code)) {
         console.log(err.toString())
     }
 })
