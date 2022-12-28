@@ -9,7 +9,6 @@
   },
   "author": "Akram El Assas",
   "dependencies": {
-    "@types/koa-router": "^7.4.4",
     "dotenv": "^16.0.3",
     "koa": "^2.14.1",
     "koa-router": "^12.0.0",
@@ -17,6 +16,7 @@
   },
   "devDependencies": {
     "@types/koa": "^2.13.5",
+    "@types/koa-router": "^7.4.4",
     "@types/node": "^18.11.17",
     "nodemon": "^2.0.20"
   }
