@@ -23,9 +23,9 @@ router.get('/', async (ctx) => {
 //
 // Serve video streaming
 //
-router.get('/api/video/:name', async ({ request, response }, next) => {
+router.get('/api/video/:name', async (ctx, next) => {
 
-    const { name } = request.params
+    const { name } = ctx.params
 
     if (
         !/^[a-z0-9-_ ]+\.mp4$/i.test(name)
@@ -33,6 +33,7 @@ router.get('/api/video/:name', async ({ request, response }, next) => {
         return next()
     }
 
+    const { request, response } = ctx
     const { range } = request.headers
 
     if (!range) {
