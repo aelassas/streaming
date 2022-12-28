@@ -25,8 +25,10 @@ router.get('/', async (ctx) => {
 //
 router.get('/api/video/:name', async ({ request, response }, next) => {
 
+    const { name } = request.params
+
     if (
-        !/^[a-z0-9-_ ]+\.mp4$/i.test(request.params.name)
+        !/^[a-z0-9-_ ]+\.mp4$/i.test(name)
     ) {
         return next()
     }
@@ -39,7 +41,6 @@ router.get('/api/video/:name', async ({ request, response }, next) => {
         return next()
     }
 
-    const name = request.params.name
     const videoPath = path.resolve(__dirname, 'videos', name)
 
     try {
