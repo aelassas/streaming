@@ -54,15 +54,29 @@ router.get('/api/video/:name', async (ctx, next) => {
             ctx.throw(err.toString())
         }
     }
-
+    
+    //
+    // Calculate start Content-Range
+    //
     const parts = range.replace('bytes=', '').split('-')
     const rangeStart = parts[0] && parts[0].trim()
     const start = rangeStart ? parseInt(rangeStart, 10) : 0
+
+    //
+    // Calculate video size and chunk size
+    //
     const videoStat = await util.promisify(fs.stat)(videoPath)
     const videoSize = videoStat.size
     const chunkSize = 10 ** 6 // 1mb
+
+    //
+    // Calculate end Content-Range
+    //
+    // Safari/iOS first sends a request whith bytes=0-1 range HTTP header
+    // probably to find out if the server supports byte ranges
+    //
     const rangeEnd = parts[1] && parts[1].trim()
-    const end = rangeEnd ? parseInt(rangeEnd, 10) : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
+    const end = rangeEnd === '1' ? 1 : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
     const contentLength = end - start + 1 // We add 1 byte because start and end start from 0
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
@@ -83,7 +97,7 @@ router.get('/api/video/:name', async (ctx, next) => {
 // We ignore ECONNRESET, ECANCELED and ECONNABORTED errors
 // because when the browser closes the connection, the server
 // tries to read the stream. So, the server says that it cannot
-// read a closed stream.
+// read a closed stream
 //
 app.on('error', (err) => {
     if (!['ECONNRESET', 'ECANCELED', 'ECONNABORTED'].includes(err.code)) {
