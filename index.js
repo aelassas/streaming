@@ -54,7 +54,7 @@ router.get('/api/video/:name', async (ctx, next) => {
             ctx.throw(err.toString())
         }
     }
-    
+
     //
     // Calculate start Content-Range
     //
@@ -76,7 +76,8 @@ router.get('/api/video/:name', async (ctx, next) => {
     // probably to find out if the server supports byte ranges
     //
     const rangeEnd = parts[1] && parts[1].trim()
-    const end = rangeEnd === '1' ? 1 : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
+    const __rangeEnd = rangeEnd ? parseInt(rangeEnd, 10) : undefined
+    const end = __rangeEnd === 1 ? __rangeEnd : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
     const contentLength = end - start + 1 // We add 1 byte because start and end start from 0
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
