@@ -52,7 +52,7 @@ router.get('/api/video/:name', async (ctx, next) => {
         if (err.code === 'ENOENT') {
             ctx.throw(404)
         } else {
-            ctx.throw(`An error occured while trying to access the file ${name}`)
+            ctx.throw(err.toString())
         }
     }
 
