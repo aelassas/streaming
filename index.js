@@ -57,20 +57,27 @@ router.get('/api/video/:name', async (ctx, next) => {
     }
 
     const parts = range.replace('bytes=', '').split('-')
-    const start = parseInt(parts[0], 10)
+    const rangeStart = parts[0] && parts[0].trim()
+    const start = rangeStart ? parseInt(rangeStart, 10) : 0
     const videoStat = await util.promisify(fs.stat)(videoPath)
     const videoSize = videoStat.size
     const chunkSize = 10 ** 6 // 1mb
-    const end = parts[1] ? parseInt(parts[1], 10) : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
+    const rangeEnd = parts[1] && parts[1].trim()
+    const end = rangeEnd ? parseInt(rangeEnd, 10) : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
     const contentLength = end - start + 1 // We add 1 byte because start and end start from 0
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
     response.set('Accept-Range', 'bytes')
     response.set('Content-Length', contentLength)
 
+    const stream = fs.createReadStream(videoPath, { start, end })
+    stream.on('error', (err) => {
+        console.log(err.toString())
+    })
+
     response.status = 206
     response.type = path.extname(name)
-    response.body = fs.createReadStream(videoPath, { start, end })
+    response.body = stream
 })
 
 //
