@@ -72,7 +72,7 @@ router.get('/api/video/:name', async (ctx, next) => {
     //
     // Calculate end Content-Range
     //
-    // Safari/iOS first sends a request whith bytes=0-1 range HTTP header
+    // Safari/iOS first sends a request with bytes=0-1 range HTTP header
     // probably to find out if the server supports byte ranges
     //
     const rangeEnd = parts[1] && parts[1].trim()
