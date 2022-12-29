@@ -13,10 +13,15 @@ const PORT = parseInt(process.env.PORT, 10) || 3000
 const app = new Koa()
 const router = new KoaRouter()
 
+const routeNames = {
+    public: '/',
+    video: '/api/video/:name'
+}
+
 //
 // Serve HTML page containing the video player
 //
-router.get('/', async (ctx) => {
+router.get(routeNames.public, async (ctx) => {
     await sendFile(ctx, path.resolve(__dirname, 'public', 'index.html'))
 
     if (!ctx.status) {
@@ -25,10 +30,18 @@ router.get('/', async (ctx) => {
 })
 
 //
+// Accept HTTP range requests
+//
+router.head(routeNames.video, (ctx) => {
+    const { response } = ctx
+    response.set('Accept-Ranges', 'bytes')
+    response.status = 200
+})
+
+//
 // Serve video streaming
 //
-router.get('/api/video/:name', async (ctx, next) => {
-
+router.get(routeNames.video, async (ctx, next) => {
     const { name } = ctx.params
 
     if (
@@ -67,7 +80,7 @@ router.get('/api/video/:name', async (ctx, next) => {
     const contentLength = end - start + 1 // We add 1 byte because start and end start from 0
 
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
-    response.set('Accept-Range', 'bytes')
+    response.set('Accept-Ranges', 'bytes')
     response.set('Content-Length', contentLength)
 
     const stream = fs.createReadStream(videoPath, { start, end })
