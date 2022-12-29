@@ -68,7 +68,7 @@ router.get(routeNames.video, async (ctx, next) => {
             ctx.throw(err.toString())
         }
     }
-
+    
     const parts = range.replace('bytes=', '').split('-')
     const rangeStart = parts[0] && parts[0].trim()
     const start = rangeStart ? parseInt(rangeStart, 10) : 0
