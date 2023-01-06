@@ -28,6 +28,10 @@ router.get('/', async (ctx) => {
 // Serve video streaming
 //
 router.get('/api/video/:name', async (ctx, next) => {
+
+    //
+    // Check video file name
+    //
     const { name } = ctx.params
 
     if (
@@ -36,6 +40,9 @@ router.get('/api/video/:name', async (ctx, next) => {
         return next()
     }
 
+    //
+    // Check Range HTTP request header
+    //
     const { request, response } = ctx
     const { range } = request.headers
 
@@ -43,6 +50,9 @@ router.get('/api/video/:name', async (ctx, next) => {
         ctx.throw(400, 'Range not provided')
     }
 
+    //
+    // Check video file
+    //
     const videoPath = path.resolve(__dirname, 'videos', name)
 
     try {
@@ -80,10 +90,16 @@ router.get('/api/video/:name', async (ctx, next) => {
     const end = __rangeEnd === 1 ? __rangeEnd : (Math.min(start + chunkSize, videoSize) - 1) // We remove 1 byte because start and end start from 0
     const contentLength = end - start + 1 // We add 1 byte because start and end start from 0
 
+    //
+    // Set HTTP response headers
+    //
     response.set('Content-Range', `bytes ${start}-${end}/${videoSize}`)
     response.set('Accept-Ranges', 'bytes')
     response.set('Content-Length', contentLength)
 
+    //
+    // Send video file stream from start to end
+    //
     const stream = fs.createReadStream(videoPath, { start, end })
     stream.on('error', (err) => {
         console.log(err.toString())
