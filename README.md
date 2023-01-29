@@ -1,3 +1,5 @@
+[![Open in vscode](https://img.shields.io/badge/Open%20in-vscode-1f425f.svg)](https://vscode.dev/github/aelassas/streaming)
+
 The video streaming server is available at http://localhost:3000/
 
 # .env
